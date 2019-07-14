@@ -6,9 +6,9 @@ package com.winesync
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
-class AppTest {
+class WineSyncTest {
     @Test fun testAppHasAGreeting() {
-        val classUnderTest = App()
+        val classUnderTest = WineSync()
         assertNotNull(classUnderTest.greeting, "app should have a greeting")
     }
 }
