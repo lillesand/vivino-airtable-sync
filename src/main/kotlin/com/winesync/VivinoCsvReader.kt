@@ -10,21 +10,23 @@ class VivinoCsvReader(fileName: String) {
 
     private val csvReader = CsvMapReader(FileReader(fileName), CsvPreference.STANDARD_PREFERENCE)
 
-    fun read(): List<Wine> {
-        val headers = arrayOf("Winery", "Wine name", "Vintage", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
+    fun read(): WinesFromVivino {
+        val headers = arrayOf("Winery", "Wine name", "vintage", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
         val cellProcessors = arrayOf(NotNull(), NotNull(), Optional(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
 
         csvReader.getHeader(true) // Skip headers
-        val wines = ArrayList<Wine>()
+        val wines = ArrayList<VivinoWine>()
         var row = csvReader.read(headers, cellProcessors)
         while (row != null) {
-            wines.add(Wine(row["Winery"] as String, row["Wine name"] as String, row["Vintage"] as? String))
+            wines.add(VivinoWine(row["Winery"] as String, row["Wine name"] as String, row["vintage"] as? String))
             row = csvReader.read(headers, cellProcessors)
         }
 
-        return wines
+        return WinesFromVivino(wines)
     }
 
 }
 
-data class Wine(val winery: String, val wineName: String, val Vintage: String?)
+data class VivinoWine(override val winery: String, override val name: String, override val vintage: String?) : Wine
+
+data class WinesFromVivino(val wines: List<VivinoWine>)

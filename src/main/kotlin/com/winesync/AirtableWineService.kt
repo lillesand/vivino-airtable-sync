@@ -2,14 +2,13 @@ package com.winesync
 
 import com.sybit.airtable.Airtable
 
-class AirtableWineService {
+class AirtableWineService(private val baseId: String) {
 
     private val airtable = Airtable().configure()
-    private val base = "appE2hzOYu6ksFXAw"
 
-    fun getWines(): List<AirtableWine> {
-        val winePojos: List<AirtableWinePojoJava> = airtable.base(base).table("Vin", AirtableWinePojoJava::class.java).select() as List<AirtableWinePojoJava>
-        return winePojos.map {
+    fun getWines(): WinesFromAirtable {
+        val winePojos = airtable.base(baseId).table("Vin", AirtableWinePojoJava::class.java).select() as List<AirtableWinePojoJava>
+        val wines = winePojos.map {
             try {
                 AirtableWine(it.id, it.winery, it.name, it.vintage, it.wineType, it.country, it.region, it.wineStyle, it.noBottles, it.noUnplacedBottles, it.noPlacedBottles)
             } catch (e: IllegalStateException) {
@@ -17,7 +16,26 @@ class AirtableWineService {
                 throw e
             }
         }
+        return WinesFromAirtable(wines)
     }
+}
 
+data class AirtableWine (
+        val id: String,
+        override val winery: String,
+        override val name: String,
+        override val vintage: String?,
+        val wineType: String?,
+        val country: String,
+        val region: String?,
+        val wineStyle: String?,
+        val noBottles: Int,
+        val noUnplacedBottles: Int?,
+        val noPlacedBottles: Int?
+) : Wine
 
+data class WinesFromAirtable(val wines: List<AirtableWine>) {
+    fun contains(wine: Wine): Boolean {
+        return wines.firstOrNull { wine.isSame(it) } != null
+    }
 }
