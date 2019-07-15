@@ -8,16 +8,14 @@ class WineSync {
 
         val newWines = winesFromVivino.wines.filter { !winesFromAirtable.contains(it) }
 
-        println("Found ${newWines.size} new wines: \n${newWines.map { it.displayName() }.joinToString("\n")}")
-        println("\nWould you like to add them to Airtable? (Y/n)")
-        val confirmation = readLine()
+        val cli = CLI()
 
-        if (listOf("", "Y", "y").contains(confirmation)) {
-            println ("kjør på")
-        } else {
-            println("Ok, skipping.")
-        }
-
+        cli.prompt(
+                message = "Found ${newWines.size} new wines: \n${newWines.map { it.displayName() }.joinToString("\n")}",
+                question = "Would you like to add them to Airtable? (Y/n)",
+                onConfirmation = {},
+                onRejection = { println("Ok, skipping." )}
+        )
     }
 
 
