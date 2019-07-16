@@ -3,19 +3,27 @@ package com.winesync
 class WineSync {
 
     fun read(fileName: String, vivinoBaseId: String) {
-        val winesFromVivino = VivinoCsvReader(fileName).read()
-        val winesFromAirtable = AirtableWineService(vivinoBaseId).getWines()
+        val airtable = AirtableWineService(vivinoBaseId)
 
-        val newWines = winesFromVivino.wines.filter { !winesFromAirtable.contains(it) }
+        val winesFromVivino = VivinoCsvReader(fileName).read()
+        val winesFromAirtable = airtable.getWines()
 
         val cli = CLI()
 
-        cli.prompt(
-                message = "Found ${newWines.size} new wines: \n${newWines.map { it.displayName() }.joinToString("\n")}",
-                question = "Would you like to add them to Airtable? (Y/n)",
-                onConfirmation = {},
-                onRejection = { println("Ok, skipping." )}
-        )
+        val newWines = winesFromVivino.wines.filter { !winesFromAirtable.contains(it) }
+        if (newWines.isEmpty()) {
+            println("Airtable is up to sync with Vivino 😎")
+        } else {
+            cli.prompt(
+                    message = "Found ${newWines.size} new wines: \n${newWines.map { it.displayName() }.joinToString("\n")}",
+                    question = "Would you like to add them to Airtable? (Y/n)",
+                    onRejection = { println("Ok, skipping.") },
+                    onConfirmation = {
+                        val winesToSave = newWines.map { AirtableWine(it.winery, it.name, it.vintage, it.regionalWineType, it.country, it.region, it.wineType, it.rating, it.noBottles, null, null) }
+                        airtable.saveNew(cli, winesToSave)
+                    }
+            )
+        }
     }
 
 

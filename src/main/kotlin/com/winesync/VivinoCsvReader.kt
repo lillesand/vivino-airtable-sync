@@ -1,6 +1,8 @@
 package com.winesync
 
 import org.supercsv.cellprocessor.Optional
+import org.supercsv.cellprocessor.ParseDouble
+import org.supercsv.cellprocessor.ParseInt
 import org.supercsv.cellprocessor.constraint.NotNull
 import org.supercsv.io.CsvMapReader
 import org.supercsv.prefs.CsvPreference
@@ -11,14 +13,24 @@ class VivinoCsvReader(fileName: String) {
     private val csvReader = CsvMapReader(FileReader(fileName), CsvPreference.STANDARD_PREFERENCE)
 
     fun read(): WinesFromVivino {
-        val headers = arrayOf("Winery", "Wine name", "vintage", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
-        val cellProcessors = arrayOf(NotNull(), NotNull(), Optional(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
+        val headers = arrayOf("Winery", "Wine name", "Vintage", "Region", "Country", "Regional wine style", "Average rating", null, null, null, null, null, null, "Wine type", null, null, null, null, "Bottles in cellar")
+        val cellProcessors = arrayOf(NotNull(), NotNull(), Optional(), Optional(), Optional(), Optional(), ParseDouble(), null, null, null, null, null, null, NotNull(), null, null, null, null, ParseInt())
 
         csvReader.getHeader(true) // Skip headers
         val wines = ArrayList<VivinoWine>()
         var row = csvReader.read(headers, cellProcessors)
         while (row != null) {
-            wines.add(VivinoWine(row["Winery"] as String, row["Wine name"] as String, row["vintage"] as? String))
+            wines.add(VivinoWine(
+                    row["Winery"] as String,
+                    row["Wine name"] as String,
+                    row["Vintage"] as? String,
+                    row["Region"] as String?,
+                    row["Country"] as String?,
+                    row["Regional wine style"] as String?,
+                    row["Average rating"] as Double,
+                    row["Wine type"] as String,
+                    row["Bottles in cellar"] as Int
+            ))
             row = csvReader.read(headers, cellProcessors)
         }
 
@@ -27,6 +39,6 @@ class VivinoCsvReader(fileName: String) {
 
 }
 
-data class VivinoWine(override val winery: String, override val name: String, override val vintage: String?) : Wine
+data class VivinoWine(override val winery: String, override val name: String, override val vintage: String?, val region: String?, val country: String?, val regionalWineType: String?, val rating: Double, val wineType: String, val noBottles: Int) : Wine
 
 data class WinesFromVivino(val wines: List<VivinoWine>)

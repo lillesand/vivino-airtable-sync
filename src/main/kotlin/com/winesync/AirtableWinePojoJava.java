@@ -4,37 +4,54 @@ import com.google.gson.annotations.SerializedName;
 
 public class AirtableWinePojoJava {
 
-    @SerializedName("bottles in cellar")
+    public AirtableWinePojoJava() { }
+
+    public AirtableWinePojoJava(String winery, String name, String vintage, String country, String region, String wineStyle, String wineType, Integer noBottles, Double averageRating) {
+        this.noBottles = noBottles;
+        this.country = country;
+        this.region = region;
+        this.wineStyle = wineStyle;
+        this.vintage = vintage;
+        this.name = name;
+        this.wineType = wineType;
+        this.winery = winery;
+        this.averageRating = averageRating.toString();
+    }
+
+    @SerializedName("Bottles in cellar")
     private Integer noBottles;
 
-    @SerializedName("country")
+    @SerializedName("Country")
     private String country;
 
-    @SerializedName("flasker uten plassering")
+    @SerializedName("Flasker uten plassering")
     private Integer noUnplacedBottles;
 
     @SerializedName("id")
     private String id;
 
-    @SerializedName("plasserte flasker")
+    @SerializedName("Plasserte flasker")
     private Integer noPlacedBottles;
 
-    @SerializedName("region")
+    @SerializedName("Region")
     private String region;
 
-    @SerializedName("regional wine style")
+    @SerializedName("Average rating")
+    private String averageRating;
+
+    @SerializedName("Regional wine style")
     private String wineStyle;
 
-    @SerializedName("vintage")
+    @SerializedName("Vintage")
     private String vintage;
 
-    @SerializedName("wine name")
+    @SerializedName("Wine name")
     private String name;
 
-    @SerializedName("wine type")
+    @SerializedName("Wine type")
     private String wineType;
 
-    @SerializedName("winery")
+    @SerializedName("Winery")
     private String winery;
 
 
@@ -124,5 +141,13 @@ public class AirtableWinePojoJava {
 
     public void setWinery(String winery) {
         this.winery = winery;
+    }
+
+    public String getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(String averageRating) {
+        this.averageRating = averageRating;
     }
 }
