@@ -1,7 +1,7 @@
 package com.winesync
 
 interface Wine {
-    fun isSame(that: AirtableWine): Boolean {
+    fun isSame(that: Wine): Boolean {
         return this.winery == that.winery && this.name == that.name && this.vintage == that.vintage
     }
 

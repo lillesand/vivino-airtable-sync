@@ -6,6 +6,10 @@ public class AirtableWinePojoJava {
 
     public AirtableWinePojoJava() { }
 
+    public AirtableWinePojoJava(String id) {
+        this.id = id;
+    }
+
     public AirtableWinePojoJava(String winery, String name, String vintage, String country, String region, String wineStyle, String wineType, Integer noBottles, Double averageRating) {
         this.noBottles = noBottles;
         this.country = country;
@@ -26,6 +30,9 @@ public class AirtableWinePojoJava {
 
     @SerializedName("Flasker uten plassering")
     private Integer noUnplacedBottles;
+
+    @SerializedName("Vin")
+    private String wine;
 
     @SerializedName("id")
     private String id;
@@ -149,5 +156,13 @@ public class AirtableWinePojoJava {
 
     public void setAverageRating(String averageRating) {
         this.averageRating = averageRating;
+    }
+
+    public String getWine() {
+        return wine;
+    }
+
+    public void setWine(String wine) {
+        this.wine = wine;
     }
 }

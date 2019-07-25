@@ -17,6 +17,10 @@ class CLI {
         return Progress(size)
     }
 
+    fun displayInfo(message: String) {
+        println(message)
+    }
+
 }
 
 class Progress(val max: Int) {

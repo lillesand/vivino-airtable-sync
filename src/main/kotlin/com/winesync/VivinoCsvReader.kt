@@ -41,4 +41,4 @@ class VivinoCsvReader(fileName: String) {
 
 data class VivinoWine(override val winery: String, override val name: String, override val vintage: String?, val region: String?, val country: String?, val regionalWineType: String?, val rating: Double, val wineType: String, val noBottles: Int) : Wine
 
-data class WinesFromVivino(val wines: List<VivinoWine>)
+data class WinesFromVivino(override val wines: List<VivinoWine>): Wines

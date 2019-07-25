@@ -2,7 +2,7 @@ package com.winesync
 
 import com.sybit.airtable.Airtable
 
-class AirtableWineService(private val baseId: String) {
+class AirtableWineService(baseId: String) {
 
     private val airtable = Airtable().configure()
     private val vinTable = airtable.base(baseId).table("Vin", AirtableWinePojoJava::class.java)
@@ -12,7 +12,8 @@ class AirtableWineService(private val baseId: String) {
         val winePojos = vinTable.select() as List<AirtableWinePojoJava>
         val wines = winePojos.map {
             try {
-                AirtableWine(it.winery, it.name, it.vintage, it.wineType, it.country, it.region, it.wineStyle, it.averageRating.replace(",", ".").toDouble(), it.noBottles, it.noUnplacedBottles, it.noPlacedBottles, it.id)
+                val averageRating = it.averageRating.replace(",", ".").toDouble()
+                AirtableWine(it.winery, it.name, it.vintage, it.wineType, it.country, it.region, it.wineStyle, averageRating, it.noBottles, it.noUnplacedBottles, it.noPlacedBottles, it.wine, it.id)
             } catch (e: IllegalStateException) {
                 println("Failed to parse data from Airtable, probably because of unexpeted null field. Failed on ${it.winery} ${it.name}")
                 throw e
@@ -32,6 +33,17 @@ class AirtableWineService(private val baseId: String) {
             Thread.sleep(100) // Max 5 calls per second. This should definitely do.
         }
     }
+
+    fun remove(cli: CLI, winesToRemove: List<AirtableWine>) {
+        val progress = cli.newProgress(winesToRemove.size)
+
+        winesToRemove.forEach {
+            progress.increment("Deleting ${it.wine}")
+            vinTable.destroy(it.id)
+
+            Thread.sleep(100) // Max 5 calls per second. This should definitely do.
+        }
+    }
 }
 
 data class AirtableWine(
@@ -46,11 +58,8 @@ data class AirtableWine(
         val noBottles: Int,
         val noUnplacedBottles: Int?,
         val noPlacedBottles: Int?,
-        val id: String = "$winery $name ${vintage.orEmpty()}".trim()
+        val wine: String = "$winery $name ${vintage.orEmpty()}".trim(),
+        val id: String?
 ) : Wine
 
-data class WinesFromAirtable(val wines: List<AirtableWine>) {
-    fun contains(wine: Wine): Boolean {
-        return wines.firstOrNull { wine.isSame(it) } != null
-    }
-}
+data class WinesFromAirtable(override val wines: List<AirtableWine>): Wines
