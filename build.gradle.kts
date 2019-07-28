@@ -22,7 +22,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.sybit:airtable.java:0.2.0")
     implementation("net.sf.supercsv:super-csv:2.4.0")
-    implementation("com.github.kittinunf.fuel:fuel:2.1.0")
+    implementation("org.apache.httpcomponents:httpclient:4.5.9")
+    implementation("org.apache.httpcomponents:fluent-hc:4.5.9")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
