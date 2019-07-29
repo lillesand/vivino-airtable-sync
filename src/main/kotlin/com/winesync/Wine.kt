@@ -6,11 +6,14 @@ interface Wine {
     }
 
     fun displayName(): String {
-        return "$winery $name $vintage"
+        val numberOfBottlesString = if(numberOfBottles == 1) "$numberOfBottles bottle" else "$numberOfBottles bottles"
+
+        return "$numberOfBottlesString: $winery $name $vintage"
     }
 
     val winery: String
     val name: String
     val vintage: String?
+    val numberOfBottles: Int
 
 }

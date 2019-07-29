@@ -26,7 +26,7 @@ class AirtableWineService(baseId: String) {
         val progress = cli.newProgress(newWines.size)
 
         newWines.forEach {
-            val pojo = AirtableWinePojoJava(it.winery, it.name, it.vintage, it.country, it.region, it.wineStyle, it.wineType, it.noBottles, it.averageRating)
+            val pojo = AirtableWinePojoJava(it.winery, it.name, it.vintage, it.country, it.region, it.wineStyle, it.wineType, it.numberOfBottles, it.averageRating)
             progress.increment("Saving ${it.displayName()}")
             vinTable.create(pojo)
 
@@ -55,7 +55,7 @@ data class AirtableWine(
         val region: String?,
         val wineStyle: String?,
         val averageRating: Double,
-        val noBottles: Int,
+        override val numberOfBottles: Int,
         val noUnplacedBottles: Int?,
         val noPlacedBottles: Int?,
         val wine: String = "$winery $name ${vintage.orEmpty()}".trim(),

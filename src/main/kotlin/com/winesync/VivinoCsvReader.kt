@@ -6,11 +6,12 @@ import org.supercsv.cellprocessor.ParseInt
 import org.supercsv.cellprocessor.constraint.NotNull
 import org.supercsv.io.CsvMapReader
 import org.supercsv.prefs.CsvPreference
+import java.io.File
 import java.io.FileReader
 
-class VivinoCsvReader(fileName: String) {
+class VivinoCsvReader(file: File) {
 
-    private val csvReader = CsvMapReader(FileReader(fileName), CsvPreference.STANDARD_PREFERENCE)
+    private val csvReader = CsvMapReader(FileReader(file), CsvPreference.STANDARD_PREFERENCE)
 
     fun read(): WinesFromVivino {
         val headers = arrayOf("Winery", "Wine name", "Vintage", "Region", "Country", "Regional wine style", "Average rating", null, null, null, null, null, null, "Wine type", null, null, null, null, "Bottles in cellar")
@@ -39,6 +40,15 @@ class VivinoCsvReader(fileName: String) {
 
 }
 
-data class VivinoWine(override val winery: String, override val name: String, override val vintage: String?, val region: String?, val country: String?, val regionalWineType: String?, val rating: Double, val wineType: String, val noBottles: Int) : Wine
+data class VivinoWine(
+        override val winery: String,
+        override val name: String,
+        override val vintage: String?,
+        val region: String?,
+        val country: String?,
+        val regionalWineType: String?,
+        val rating: Double,
+        val wineType: String,
+        override val numberOfBottles: Int) : Wine
 
 data class WinesFromVivino(override val wines: List<VivinoWine>): Wines
