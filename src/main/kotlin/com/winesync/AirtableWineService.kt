@@ -5,11 +5,11 @@ import com.sybit.airtable.Airtable
 class AirtableWineService(airtableProperties: AirtableProperties) {
 
     private val airtable = Airtable().configure()
-    private val vinTable = airtable.base(airtableProperties.baseId).table("Vin", AirtableWinePojoJava::class.java)
+    private val vinTable = airtable.base(airtableProperties.baseId).table("Vin", AirtableWinePojo::class.java)
 
     fun getWines(): WinesFromAirtable {
         @Suppress("UNCHECKED_CAST")
-        val winePojos = vinTable.select() as List<AirtableWinePojoJava>
+        val winePojos = vinTable.select() as List<AirtableWinePojo>
         val wines = winePojos.map {
             try {
                 val averageRating = it.averageRating.replace(",", ".").toDouble()
@@ -26,7 +26,7 @@ class AirtableWineService(airtableProperties: AirtableProperties) {
         val progress = cli.newProgress(newWines.size)
 
         newWines.forEach {
-            val pojo = AirtableWinePojoJava(it.winery, it.name, it.vintage, it.country, it.region, it.wineStyle, it.wineType, it.numberOfBottles, it.averageRating)
+            val pojo = AirtableWinePojo(it.winery, it.name, it.vintage, it.country, it.region, it.wineStyle, it.wineType, it.numberOfBottles, it.averageRating)
             progress.increment("Saving ${it.displayName()}")
             vinTable.create(pojo)
 
@@ -44,6 +44,21 @@ class AirtableWineService(airtableProperties: AirtableProperties) {
             Thread.sleep(100) // Max 5 calls per second. This should definitely do.
         }
     }
+
+    fun updateAmounts(cli: CLI, changedAmount: List<AmountUpdate>) {
+        changedAmount
+                .forEach {
+                    cli.displayInfo("Updating ${it.displayName()}")
+                    vinTable.update(AirtableUpdateAmountPojo(it.airtableId, it.newAmount))
+                }
+    }
+}
+
+interface AmountUpdate {
+    val airtableId: String
+    val newAmount: Int
+
+    fun displayName(): String
 }
 
 data class AirtableWine(

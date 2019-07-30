@@ -2,15 +2,15 @@ package com.winesync;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AirtableWinePojoJava {
+public class AirtableWinePojo {
 
-    public AirtableWinePojoJava() { }
+    public AirtableWinePojo() { }
 
-    public AirtableWinePojoJava(String id) {
+    public AirtableWinePojo(String id) {
         this.id = id;
     }
 
-    public AirtableWinePojoJava(String winery, String name, String vintage, String country, String region, String wineStyle, String wineType, Integer noBottles, Double averageRating) {
+    public AirtableWinePojo(String winery, String name, String vintage, String country, String region, String wineStyle, String wineType, Integer noBottles, Double averageRating) {
         this.noBottles = noBottles;
         this.country = country;
         this.region = region;

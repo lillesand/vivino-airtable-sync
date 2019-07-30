@@ -39,6 +39,22 @@ class WineSync(private val vivinoProperties: VivinoProperties, private val airta
             )
         }
 
+        val changedAmount = winesFromVivino.wines.map {
+            val airtableWine = winesFromAirtable.find(it) ?: return
+            AmountDiff(it, airtableWine as AirtableWine)
+        }.filter { it.hasDiff() }
+
+        if (changedAmount.isNotEmpty()) {
+            cli.prompt(
+                    message = "Found ${changedAmount.size} with different number of bottles remaining: \n${changedAmount.joinToString("\n") { it.displayName() }}",
+                    question = "Would you like to update amount in Airtable? (Y/n)",
+                    onRejection = { println("Okay, leaving it as is.") },
+                    onConfirmation = {
+                        airtable.updateAmounts(cli, changedAmount)
+                    }
+            )
+        }
+
         if (newWines.isEmpty() && drunkWines.isEmpty()) {
             cli.displayInfo("Vivino and Airtable are in sync 😎")
         }
