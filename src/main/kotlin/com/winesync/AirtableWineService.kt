@@ -2,10 +2,10 @@ package com.winesync
 
 import com.sybit.airtable.Airtable
 
-class AirtableWineService(baseId: String) {
+class AirtableWineService(airtableProperties: AirtableProperties) {
 
     private val airtable = Airtable().configure()
-    private val vinTable = airtable.base(baseId).table("Vin", AirtableWinePojoJava::class.java)
+    private val vinTable = airtable.base(airtableProperties.baseId).table("Vin", AirtableWinePojoJava::class.java)
 
     fun getWines(): WinesFromAirtable {
         @Suppress("UNCHECKED_CAST")

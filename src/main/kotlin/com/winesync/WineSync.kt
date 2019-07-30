@@ -2,13 +2,13 @@ package com.winesync
 
 import java.io.File
 
-class WineSync(private val vivinoProperties: VivinoProperties) {
+class WineSync(private val vivinoProperties: VivinoProperties, private val airtableProperties: AirtableProperties) {
 
-    fun read(airtableBaseId: String) {
-        val cli = CLI()
-        val airtable = AirtableWineService(airtableBaseId)
-        val vivinoWebScraper = VivinoWebScraper(vivinoProperties)
+    private val cli = CLI()
+    private val airtable = AirtableWineService(airtableProperties)
+    private val vivinoWebScraper = VivinoWebScraper(vivinoProperties)
 
+    fun run() {
         vivinoWebScraper.download(cli)
         val winesFromVivino = VivinoCsvReader(vivinoProperties.cacheFile).read()
         val winesFromAirtable = airtable.getWines()
@@ -16,7 +16,7 @@ class WineSync(private val vivinoProperties: VivinoProperties) {
         val newWines = winesFromVivino.wines.filter { !winesFromAirtable.contains(it) }
         if (newWines.isNotEmpty()) {
             cli.prompt(
-                    message = "Found ${newWines.size} new wines: \n${newWines.map { it.displayName() }.joinToString("\n")}.\n\n" +
+                    message = "Found ${newWines.size} new wines: \n${newWines.joinToString("\n") { it.displayName() }}.\n\n" +
                             "That's a whopping ${newWines.map { it.numberOfBottles }.reduce { acc, i -> acc + i  }} bottles of wine!",
                     question = "Would you like to add them to Airtable? (Y/n)",
                     onRejection = { println("Ok, skipping.") },
@@ -30,7 +30,7 @@ class WineSync(private val vivinoProperties: VivinoProperties) {
         val drunkWines = winesFromAirtable.wines.filter { !winesFromVivino.contains(it) }
         if (drunkWines.isNotEmpty()) {
             cli.prompt(
-                    message = "Found ${drunkWines.size} in Airtable that are missing in Vivino: \n${drunkWines.map { it.displayName() }.joinToString("\n")}",
+                    message = "Found ${drunkWines.size} in Airtable that are missing in Vivino: \n${drunkWines.joinToString("\n") { it.displayName() }}",
                     question = "Would you like to remove them from Airtable? (Y/n)",
                     onRejection = { println("Ok, leaving them there.") },
                     onConfirmation = {
@@ -55,7 +55,9 @@ data class VivinoProperties(val username: String, val userId: String, val cacheF
 
 }
 
-fun main(args: Array<String>) {
-    WineSync(VivinoProperties("lillesand@gmail.com", "1235453")).read("appE2hzOYu6ksFXAw")
+data class AirtableProperties(val baseId: String)
+
+fun main() {
+    WineSync(VivinoProperties("lillesand@gmail.com", "1235453"), AirtableProperties("appE2hzOYu6ksFXAw")).run()
 }
 
